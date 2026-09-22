@@ -1,16 +1,21 @@
-
 import Link from "next/link"
 import Image from "next/image"
 import { useContext } from "react"
+import { useRouter } from "next/router"
 import Layout from "../components/Layout"
 import { Store } from "../context/Cart"
 
 function CartPage() {
   const { state, dispatch } = useContext(Store)
   const { cartItems } = state.cart
+  const router = useRouter()
 
   const removeItemHandler = (item) => {
     dispatch({ type: "REMOVE_ITEM", payload: item })
+  }
+
+  const checkoutHandler = () => {
+    router.push("/shipping")
   }
 
   if (cartItems.length === 0) {
@@ -87,6 +92,13 @@ function CartPage() {
             )}
           </div>
         </div>
+
+        <button
+          onClick={checkoutHandler}
+          className="mt-4 rounded-xl bg-gray-700 px-4 py-2 text-white"
+        >
+          Checkout
+        </button>
 
         <div className="mt-6">
           <Link
