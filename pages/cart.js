@@ -9,9 +9,9 @@ function CartPage() {
   const { state, dispatch } = useContext(Store)
   const { cartItems } = state.cart
 
-  // const removeItemHandler = (item) => {
-  //   dispatch({ type: "CART_REMOVE_ITEM", payload: item })
-  // }
+  const removeItemHandler = (item) => {
+    dispatch({ type: "REMOVE_ITEM", payload: item })
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -65,12 +65,12 @@ function CartPage() {
                 <td className="py-4">${item.price}</td>
 
                 <td className="py-4">
-                  {/* <button
+                  <button
                     onClick={() => removeItemHandler(item)}
                     className="rounded bg-red-600 px-3 py-1 text-white"
                   >
                     Remove
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}

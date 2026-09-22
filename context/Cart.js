@@ -28,7 +28,7 @@ function reducer(state, action) {
       return { ...state, cart: { ...state.cart, cartItems } }
     }
 
-    case "CART_REMOVE_ITEM": {
+    case "REMOVE_ITEM": {
       const cartItems = state.cart.cartItems.filter(
         (item) => item.slug !== action.payload.slug
       )
@@ -50,7 +50,7 @@ function reducer(state, action) {
 export function StoreProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  // 👇 useEffect #1 — hydrate from localStorage once, on mount
+  // useEffect #1 — hydrate from localStorage once, on mount
   useEffect(() => {
     const stored = window.localStorage.getItem("cart")
     if (stored) {
@@ -61,7 +61,7 @@ export function StoreProvider({ children }) {
     }
   }, [])
 
-  // 👇 useEffect #2 — persist to localStorage on every cart change
+  // useEffect #2 — persist to localStorage on every cart change
   useEffect(() => {
     window.localStorage.setItem("cart", JSON.stringify(state.cart))
   }, [state.cart])
