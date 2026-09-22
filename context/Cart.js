@@ -1,4 +1,5 @@
 import { createContext, useReducer, useContext, useEffect } from "react"
+import Cookies from "js-cookie"
 
 // ---------- Context ----------
 export const Store = createContext()
@@ -18,13 +19,11 @@ function reducer(state, action) {
       const existItem = state.cart.cartItems.find(
         (item) => item.slug === newItem.slug
       )
-
       const cartItems = existItem
         ? state.cart.cartItems.map((item) =>
             item.slug === existItem.slug ? newItem : item
           )
         : [...state.cart.cartItems, newItem]
-
       return { ...state, cart: { ...state.cart, cartItems } }
     }
 
@@ -50,20 +49,24 @@ function reducer(state, action) {
 export function StoreProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  // useEffect #1 — hydrate from localStorage once, on mount
+  // hydrate from cookie once on mount
   useEffect(() => {
-    const stored = window.localStorage.getItem("cart")
+    const stored = Cookies.get("cart")
     if (stored) {
-      const parsed = JSON.parse(stored)
-      if (parsed?.cartItems?.length) {
-        dispatch({ type: "CART_HYDRATE", payload: parsed.cartItems })
+      try {
+        const parsed = JSON.parse(stored)
+        if (parsed?.cartItems?.length) {
+          dispatch({ type: "CART_HYDRATE", payload: parsed.cartItems })
+        }
+      } catch (e) {
+        // ignore malformed cookie
       }
     }
   }, [])
 
-  // useEffect #2 — persist to localStorage on every cart change
+  // persist to cookie on every change
   useEffect(() => {
-    window.localStorage.setItem("cart", JSON.stringify(state.cart))
+    Cookies.set("cart", JSON.stringify(state.cart), { expires: 7 })
   }, [state.cart])
 
   return (
@@ -73,7 +76,6 @@ export function StoreProvider({ children }) {
   )
 }
 
-// ---------- Hook ----------
 export function useStore() {
   return useContext(Store)
 }
