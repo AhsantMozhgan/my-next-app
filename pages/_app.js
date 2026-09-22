@@ -1,9 +1,13 @@
-import "@/styles/globals.css";
+import "../styles/globals.css";
+
+import { CartContextProvider } from "../context/Cart";
 
  function MyApp({ Component, pageProps }) {
   return (
     <div className="bg-gray-100">
-      <Component {...pageProps} />
+      <CartContextProvider>
+        <Component {...pageProps} />
+      </CartContextProvider>
     </div>
   )
 }
