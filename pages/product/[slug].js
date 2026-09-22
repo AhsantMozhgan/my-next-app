@@ -19,6 +19,7 @@ function ProductPage() {
     )
     const quantity = existingItem ? existingItem.quantity + 1 : 1
 
+    // check-product-count
     if (product.count < quantity) {
       alert("Sorry. Product is out of stock")
       return
