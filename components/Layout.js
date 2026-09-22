@@ -1,10 +1,10 @@
 import Head from "next/head"
 import Link from "next/link"
 import { useContext } from "react"
-import { CartContext } from "../context/Cart"
+import { Store } from "../context/Cart"
 
 function Layout({ title, children }) {
-  const { state } = useContext(CartContext)
+  const { state } = useContext(Store)
   const { cart } = state
   const count = cart.cartItems.reduce((acc, cur) => acc + cur.quantity, 0)
 

@@ -1,7 +1,7 @@
 import { createContext, useReducer, useContext, useEffect } from "react"
 
 // ---------- Context ----------
-export const CartContext = createContext()
+export const Store = createContext()
 
 // ---------- Initial state ----------
 const initialState = {
@@ -47,7 +47,7 @@ function reducer(state, action) {
 }
 
 // ---------- Provider ----------
-export function CartContextProvider({ children }) {
+export function StoreProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   // 👇 useEffect #1 — hydrate from localStorage once, on mount
@@ -67,13 +67,13 @@ export function CartContextProvider({ children }) {
   }, [state.cart])
 
   return (
-    <CartContext.Provider value={{ state, dispatch }}>
+    <Store.Provider value={{ state, dispatch }}>
       {children}
-    </CartContext.Provider>
+    </Store.Provider>
   )
 }
 
 // ---------- Hook ----------
 export function useStore() {
-  return useContext(CartContext)
+  return useContext(Store)
 }

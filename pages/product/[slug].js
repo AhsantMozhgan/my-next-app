@@ -3,10 +3,10 @@ import Layout from "../../components/Layout"
 import productItems from "../../data/products.json"
 import Image from "next/image"
 import { useContext } from "react"
-import { CartContext } from "../../context/Cart"
+import { Store } from "../../context/Cart"
 
 function ProductPage() {
-  const { state, dispatch } = useContext(CartContext)
+  const { state, dispatch } = useContext(Store)
   const { query } = useRouter()
   const { slug } = query
 
