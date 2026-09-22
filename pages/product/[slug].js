@@ -3,22 +3,20 @@ import Layout from "../../components/Layout"
 import productItems from "../../data/products.json"
 import Image from "next/image"
 import { useContext } from "react"
-import { CartContext } from '../../context/Cart'
+import { CartContext } from "../../context/Cart"
 
 function ProductPage() {
-  
-  const {state, dispatch } = useContext(CartContext)
+  const { state, dispatch } = useContext(CartContext)
   const { query } = useRouter()
   const { slug } = query
 
   const product = productItems.find((pItem) => pItem.slug === slug)
-
-  if (!product) {
-    return <div>Product not found.</div>
-  }
+  if (!product) return <div>Product not found.</div>
 
   function addToCartHandler() {
-    const existingItem = state.cart.cartItems.find((item) => item.slug === product.slug)
+    const existingItem = state.cart.cartItems.find(
+      (item) => item.slug === product.slug
+    )
     const quantity = existingItem ? existingItem.quantity + 1 : 1
 
     if (product.count < quantity) {

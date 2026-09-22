@@ -1,7 +1,7 @@
-import { createContext, useReducer } from 'react'
+import { createContext, useReducer, useContext, useEffect } from "react"
 
 // ---------- Context ----------
-const CartContext = createContext()
+export const CartContext = createContext()
 
 // ---------- Initial state ----------
 const initialState = {
@@ -21,12 +21,25 @@ function reducer(state, action) {
 
       const cartItems = existItem
         ? state.cart.cartItems.map((item) =>
-            item.title === existItem.title ? newItem : item
+            item.slug === existItem.slug ? newItem : item
           )
         : [...state.cart.cartItems, newItem]
 
       return { ...state, cart: { ...state.cart, cartItems } }
     }
+
+    case "CART_REMOVE_ITEM": {
+      const cartItems = state.cart.cartItems.filter(
+        (item) => item.slug !== action.payload.slug
+      )
+      return { ...state, cart: { ...state.cart, cartItems } }
+    }
+
+    case "CART_CLEAR":
+      return { ...state, cart: { ...state.cart, cartItems: [] } }
+
+    case "CART_HYDRATE":
+      return { ...state, cart: { ...state.cart, cartItems: action.payload } }
 
     default:
       return state
@@ -37,11 +50,30 @@ function reducer(state, action) {
 export function CartContextProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const value = { state, dispatch }
+  // 👇 useEffect #1 — hydrate from localStorage once, on mount
+  useEffect(() => {
+    const stored = window.localStorage.getItem("cart")
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      if (parsed?.cartItems?.length) {
+        dispatch({ type: "CART_HYDRATE", payload: parsed.cartItems })
+      }
+    }
+  }, [])
+
+  // 👇 useEffect #2 — persist to localStorage on every cart change
+  useEffect(() => {
+    window.localStorage.setItem("cart", JSON.stringify(state.cart))
+  }, [state.cart])
 
   return (
-    <CartContext.Provider value={value}>
+    <CartContext.Provider value={{ state, dispatch }}>
       {children}
     </CartContext.Provider>
   )
+}
+
+// ---------- Hook ----------
+export function useStore() {
+  return useContext(CartContext)
 }
