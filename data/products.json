@@ -1,0 +1,22 @@
+[
+    {
+
+      "title": "iPhone 13",
+      "price": "99",
+      "slug": "iphone-13",
+      "description": "New iphone",
+      "category": "Laptops",
+      "count": 10,
+      "image": "/images/01.png"
+    },
+    {
+
+      "title": "iPhone 15",
+      "price": "299",
+      "slug": "iphone-15",
+      "description": "New iphone",
+      "category": "Laptops",
+      "count": 10,
+      "image": "/images/02.png"
+    }
+]
