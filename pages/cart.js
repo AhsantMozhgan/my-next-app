@@ -78,7 +78,7 @@ function CartPage() {
         </table>
 
         <div className="mt-6 flex justify-between text-lg font-semibold">
-          <div>Total:</div>
+          <div>Total Price:</div>
           <div>
             $
             {cartItems.reduce(
