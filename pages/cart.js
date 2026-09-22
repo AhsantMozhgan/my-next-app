@@ -52,8 +52,8 @@ function CartPage() {
                     <Image
                       src={item.image}
                       alt={item.title}
-                      width={60}
-                      height={60}
+                      width={50}
+                      height={50}
                       className="rounded"
                     />
                     <span>{item.title}</span>
