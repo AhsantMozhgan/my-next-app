@@ -5,7 +5,7 @@
       "price": "99",
       "slug": "iphone-13",
       "description": "New iphone",
-      "category": "Laptops",
+      "category": "Smartphones",
       "count": 10,
       "image": "/images/01.png"
     },
@@ -15,7 +15,7 @@
       "price": "299",
       "slug": "iphone-15",
       "description": "New iphone",
-      "category": "Laptops",
+      "category": "Smartphones",
       "count": 10,
       "image": "/images/02.png"
     }
