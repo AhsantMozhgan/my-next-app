@@ -1,15 +1,13 @@
-import { useContext } from "react"
+import { useState } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import Cookies from "js-cookie"
+import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import Layout from "../components/Layout"
-import { Store } from "../context/Cart"
 
 function LoginPage() {
   const router = useRouter()
-  const { state, dispatch } = useContext(Store)
-  const { cart } = state
+  const { redirect } = router.query
 
   const {
     handleSubmit,
@@ -17,11 +15,24 @@ function LoginPage() {
     formState: { errors },
   } = useForm()
 
-  const submitHandler = ({ email }) => {
-    const userInfo = { name: "Masood", email }
-    dispatch({ type: "USER_LOGIN", payload: userInfo })
-    Cookies.set("userInfo", JSON.stringify(userInfo), { expires: 7 })
-    router.push(cart.cartItems.length > 0 ? "/shipping" : "/")
+  const [error, setError] = useState("")
+
+  const submitHandler = async ({ email, password }) => {
+    setError("")
+
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    })
+
+    if (result?.error) {
+      setError(result.error)
+      return
+    }
+
+    // only redirect if login succeeded
+    router.push(redirect || "/")
   }
 
   return (
@@ -31,6 +42,12 @@ function LoginPage() {
         className="mx-auto max-w-md bg-white rounded-xl p-6"
       >
         <h1 className="mb-6 text-xl font-bold">Login</h1>
+
+        {error && (
+          <p className="mb-4 rounded bg-red-100 p-2 text-sm text-red-700">
+            {error}
+          </p>
+        )}
 
         <div className="mb-4">
           <label className="mb-1 block">Email</label>
