@@ -1,15 +1,18 @@
-import "../styles/globals.css";
+import "../styles/globals.css"
+import { SessionProvider } from "next-auth/react"
+import { StoreProvider } from "../context/Cart"
 
-import { StoreProvider } from "../context/Cart";
-
- function MyApp({ Component, pageProps }) {
+export default function MyApp({
+  Component,
+  pageProps: { session, ...pageProps },
+}) {
   return (
     <div className="bg-gray-100">
-      <StoreProvider>
-        <Component {...pageProps} />
-      </StoreProvider>
+      <SessionProvider session={session}>
+        <StoreProvider>
+          <Component {...pageProps} />
+        </StoreProvider>
+      </SessionProvider>
     </div>
   )
 }
-
-export default MyApp
