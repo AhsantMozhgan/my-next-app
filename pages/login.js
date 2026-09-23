@@ -1,13 +1,14 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { signIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import Layout from "../components/Layout"
 
 function LoginPage() {
   const router = useRouter()
   const { redirect } = router.query
+  const { status } = useSession()
 
   const {
     handleSubmit,
@@ -16,6 +17,13 @@ function LoginPage() {
   } = useForm()
 
   const [error, setError] = useState("")
+
+  // if already logged in, skip the login form
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push(redirect || "/")
+    }
+  }, [status, router, redirect])
 
   const submitHandler = async ({ email, password }) => {
     setError("")
@@ -31,7 +39,6 @@ function LoginPage() {
       return
     }
 
-    // only redirect if login succeeded
     router.push(redirect || "/")
   }
 
