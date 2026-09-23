@@ -1,86 +1,85 @@
-import { useState } from "react"
+import { useContext } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
+import Cookies from "js-cookie"
+import { useForm } from "react-hook-form"
 import Layout from "../components/Layout"
+import { Store } from "../context/Cart"
 
-function RegisterPage() {
+function LoginPage() {
   const router = useRouter()
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirm, setConfirm] = useState("")
+  const { state, dispatch } = useContext(Store)
+  const { cart } = state
 
-  const submitHandler = (e) => {
-    e.preventDefault()
-    if (password !== confirm) {
-      alert("Passwords do not match")
-      return
-    }
-    // later: POST to /api/users/register
-    router.push("/login")
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm()
+
+  const submitHandler = ({ email }) => {
+    const userInfo = { name: "Masood", email }
+    dispatch({ type: "USER_LOGIN", payload: userInfo })
+    Cookies.set("userInfo", JSON.stringify(userInfo), { expires: 7 })
+    router.push(cart.cartItems.length > 0 ? "/shipping" : "/")
   }
 
   return (
-    <Layout title="Register">
+    <Layout title="Login">
       <form
-        onSubmit={submitHandler}
+        onSubmit={handleSubmit(submitHandler)}
         className="mx-auto max-w-md bg-white rounded-xl p-6"
       >
-        <h1 className="mb-6 text-xl font-bold">Register</h1>
-
-        <div className="mb-4">
-          <label className="mb-1 block">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full rounded border p-2"
-            required
-          />
-        </div>
+        <h1 className="mb-6 text-xl font-bold">Login</h1>
 
         <div className="mb-4">
           <label className="mb-1 block">Email</label>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^\S+@\S+\.\S+$/,
+                message: "Email is invalid",
+              },
+            })}
             className="w-full rounded border p-2"
-            required
           />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.email.message}
+            </p>
+          )}
         </div>
 
         <div className="mb-4">
           <label className="mb-1 block">Password</label>
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
             className="w-full rounded border p-2"
-            required
           />
-        </div>
-
-        <div className="mb-4">
-          <label className="mb-1 block">Confirm Password</label>
-          <input
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            className="w-full rounded border p-2"
-            required
-          />
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.password.message}
+            </p>
+          )}
         </div>
 
         <button className="rounded-xl bg-gray-700 px-4 py-2 text-white">
-          Register
+          Login
         </button>
 
-        {/* reverse link */}
         <div className="mt-4 text-sm">
-          Already have an account?{" "}
-          <Link href="/login" className="text-blue-600 underline">
-            Login
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-blue-600 underline">
+            Register
           </Link>
         </div>
       </form>
@@ -88,4 +87,4 @@ function RegisterPage() {
   )
 }
 
-export default RegisterPage
+export default LoginPage
