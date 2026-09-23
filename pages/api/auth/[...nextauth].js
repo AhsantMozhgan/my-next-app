@@ -1,28 +1,37 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import bcrypt from "bcryptjs"
 import db from "../../../utils/db"
 import User from "../../../models/user"
 
 export default NextAuth({
   providers: [
     CredentialsProvider({
-    //   name: "Credentials",
-    //   credentials: {
-    //     email: { label: "Email", type: "email" },
-    //     password: { label: "Password", type: "password" },
-    //   },
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(credentials) {
         await db.connect()
 
         const user = await User.findOne({ email: credentials.email })
         if (!user) throw new Error("No user found with that email")
+
+        const ok = await bcrypt.compare(credentials.password, user.password)
+        if (!ok) throw new Error("Incorrect password")
+
+        return {
+          _id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin,
+        }
       },
     }),
   ],
 
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
 
   callbacks: {
     async jwt({ token, user }) {
