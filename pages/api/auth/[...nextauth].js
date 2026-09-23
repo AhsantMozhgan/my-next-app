@@ -13,7 +13,7 @@ export default NextAuth({
     async session({ session, token }) {
       if (token?._id) session.user._id = token._id
       if (token?.isAdmin) session.user.isAdmin = token.isAdmin
-      return session
+      return session    // return session, not token
     },
   },
 })
