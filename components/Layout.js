@@ -26,6 +26,7 @@ function Layout({ title, children }) {
   const handleLogout = () => {
     dispatch({ type: "CART_CLEAR" })   // empty cart in memory
     Cookies.remove("cart")             // empty cart in the cookie
+    // Cookies.remove("shippingAddress")
     signOut({ callbackUrl: "/" })      // end the NextAuth session
   }
 

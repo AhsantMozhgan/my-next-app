@@ -36,7 +36,7 @@ function reducer(state, action) {
     }
 
     case "CART_CLEAR":
-      return { ...state, cart: { ...state.cart, cartItems: [] } }
+      return { ...state, cart: { ...state.cart, cartItems: [], shippingAddress: null, } }
 
     case "CART_HYDRATE":
       return { ...state, cart: { ...state.cart, cartItems: action.payload } }
