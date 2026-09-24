@@ -8,6 +8,7 @@ export const Store = createContext()
 const initialState = {
   cart: {
     cartItems: [],
+    shippingAddress: null,
   },
 }
 
@@ -40,6 +41,9 @@ function reducer(state, action) {
     case "CART_HYDRATE":
       return { ...state, cart: { ...state.cart, cartItems: action.payload } }
 
+    case "SAVE_SHIPPING_ADDRESS":
+      return { ...state, cart: { ...state.cart, shippingAddress: action.payload } }
+
     default:
       return state
   }
@@ -64,10 +68,40 @@ export function StoreProvider({ children }) {
     }
   }, [])
 
-  // persist to cookie on every change
-  useEffect(() => {
-    Cookies.set("cart", JSON.stringify(state.cart), { expires: 7 })
-  }, [state.cart])
+  // hydrate shipping address from cookie once on mount
+useEffect(() => {
+  const storedAddress = Cookies.get("shippingAddress")
+  if (storedAddress) {
+    try {
+      dispatch({
+        type: "SAVE_SHIPPING_ADDRESS",
+        payload: JSON.parse(storedAddress),
+      })
+    } catch (e) {
+      // ignore malformed cookie
+    }
+  }
+}, [])
+
+// persist cart items
+useEffect(() => {
+  Cookies.set(
+    "cart",
+    JSON.stringify({ cartItems: state.cart.cartItems }),
+    { expires: 7 }
+  )
+}, [state.cart.cartItems])
+
+// persist shipping address
+useEffect(() => {
+  if (state.cart.shippingAddress) {
+    Cookies.set(
+      "shippingAddress",
+      JSON.stringify(state.cart.shippingAddress),
+      { expires: 7 }
+    )
+  }
+}, [state.cart.shippingAddress])
 
   return (
     <Store.Provider value={{ state, dispatch }}>
