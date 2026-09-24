@@ -1,8 +1,8 @@
-// components/ProductItem.js
 import Link from "next/link"
 import Image from "next/image"
 import { useContext } from "react"
 import { useRouter } from "next/router"
+import { toast } from "react-toastify"
 import { Store } from "../context/Cart"
 
 function ProductItem({ item }) {
@@ -10,11 +10,13 @@ function ProductItem({ item }) {
   const router = useRouter()
 
   function addToCartHandler() {
-    const existingItem = state.cart.cartItems.find((x) => x.slug === item.slug)
+    const existingItem = state.cart.cartItems.find(
+      (x) => x.slug === item.slug
+    )
     const quantity = existingItem ? existingItem.quantity + 1 : 1
 
     if (item.count < quantity) {
-      alert("Sorry. Product is out of stock")
+      toast.error("Sorry. Product is out of stock")
       return
     }
 
@@ -23,7 +25,7 @@ function ProductItem({ item }) {
       payload: { ...item, quantity },
     })
 
-    router.push("/")
+    toast.success("Added to cart!")
   }
 
   return (
