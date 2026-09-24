@@ -7,9 +7,11 @@ import CheckoutWizard from "../components/CheckoutWizard"
 import { Store } from "../context/Cart"
 
 function Shipping() {
-  const router = useRouter()               
+  const router = useRouter()
   const { state, dispatch } = useContext(Store)
-  const { cart: { cartItems, shippingAddress } } = state
+  const {
+    cart: { cartItems, shippingAddress },
+  } = state
 
   // empty cart → back home
   useEffect(() => {
@@ -22,11 +24,20 @@ function Shipping() {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm({
-    defaultValues: shippingAddress || {},
-  })
+    setValue,
+  } = useForm()
 
-  // submit handler
+  // once context has the address, push it into the form
+  useEffect(() => {
+    if (shippingAddress) {
+      setValue("fullName", shippingAddress.fullName)
+      setValue("address", shippingAddress.address)
+      setValue("city", shippingAddress.city)
+      setValue("postalCode", shippingAddress.postalCode)
+      setValue("country", shippingAddress.country)
+    }
+  }, [shippingAddress, setValue])
+
   const submitHandler = ({
     fullName,
     address,
@@ -76,7 +87,7 @@ function Shipping() {
         <div className="mb-4">
           <label className="mb-1 block">Address</label>
           <input
-            {...register("address", { required: "Address is required" })}     // 🆕
+            {...register("address", { required: "Address is required" })}
             className="w-full rounded border p-2"
           />
           {errors.address && (
