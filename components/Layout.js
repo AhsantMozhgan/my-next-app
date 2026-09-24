@@ -2,10 +2,9 @@ import Head from "next/head"
 import Link from "next/link"
 import { useContext, useSyncExternalStore } from "react"
 import { useSession, signOut } from "next-auth/react"
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { Store } from "../context/Cart"
+import Dropdown from "./DropDown"
 
-// false on server, true on client — no useEffect, no warning
 function useMounted() {
   return useSyncExternalStore(
     () => () => {},
@@ -21,6 +20,12 @@ function Layout({ title, children }) {
 
   const { status, data: session } = useSession()
   const mounted = useMounted()
+
+  const userMenuItems = [
+    { href: "/profile", label: "Profile" },
+    { href: "/order-history", label: "Order History" },
+    { label: "Logout", onClick: () => signOut({ callbackUrl: "/" }) },
+  ]
 
   return (
     <>
@@ -46,44 +51,7 @@ function Layout({ title, children }) {
               {status === "loading" ? (
                 <span className="p-2 text-sm text-gray-400">…</span>
               ) : session ? (
-                <Menu>
-                  <MenuButton className="rounded bg-gray-700 px-3 py-1 text-sm text-white data-active:bg-gray-800">
-                    {session.user.name}
-                  </MenuButton>
-                  </Menu>
-
-                  // <MenuItems
-                  //   anchor="bottom end"
-                  //   className="mt-1 w-52 rounded-lg bg-white p-1 shadow-lg [--anchor-gap:4px]"
-                  // >
-                  //   <MenuItem>
-                  //     <Link
-                  //       href="/profile"
-                  //       className="block rounded px-3 py-2 text-sm data-focus:bg-gray-100"
-                  //     >
-                  //       Profile
-                  //     </Link>
-                  //   </MenuItem>
-
-                  //   <MenuItem>
-                  //     <Link
-                  //       href="/order-history"
-                  //       className="block rounded px-3 py-2 text-sm data-focus:bg-gray-100"
-                  //     >
-                  //       Order History
-                  //     </Link>
-                  //   </MenuItem>
-
-                  //   <MenuItem>
-                  //     <button
-                  //       onClick={() => signOut({ callbackUrl: "/" })}
-                  //       className="block w-full rounded px-3 py-2 text-left text-sm data-focus:bg-gray-100"
-                  //     >
-                  //       Logout
-                  //     </button>
-                  //   </MenuItem>
-                  // </MenuItems>
-                // </Menu>
+                <Dropdown label={session.user.name} items={userMenuItems} />
               ) : (
                 <Link href="/login" className="p-2">Login</Link>
               )}
