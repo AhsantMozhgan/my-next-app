@@ -1,7 +1,8 @@
 import "../styles/globals.css"
 import "react-toastify/dist/ReactToastify.css"
+import { useRouter } from "next/router"
 import { ToastContainer } from "react-toastify"
-import { SessionProvider } from "next-auth/react"
+import { SessionProvider, useSession } from "next-auth/react"
 import { StoreProvider } from "../context/Cart"
 
 export default function MyApp({
@@ -12,10 +13,32 @@ export default function MyApp({
     <div className="bg-gray-100">
       <SessionProvider session={session}>
         <StoreProvider>
-          <Component {...pageProps} />
+          {Component.auth ? (
+            <Auth>
+              <Component {...pageProps} />
+            </Auth>
+          ) : (
+            <Component {...pageProps} />
+          )}
         </StoreProvider>
       </SessionProvider>
       <ToastContainer position="top-right" limit={1} autoClose={3000} />
     </div>
   )
+}
+
+function Auth({ children }) {
+  const router = useRouter()
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/unauthorized")
+    },
+  })
+
+  if (status === "loading") {
+    return <div className="p-10 text-center">Loading…</div>
+  }
+
+  return children
 }

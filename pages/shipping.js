@@ -13,7 +13,6 @@ function Shipping() {
     cart: { cartItems, shippingAddress },
   } = state
 
-  // empty cart → back home
   useEffect(() => {
     if (!cartItems.length) {
       router.push("/")
@@ -27,7 +26,6 @@ function Shipping() {
     setValue,
   } = useForm()
 
-  // once context has the address, push it into the form
   useEffect(() => {
     if (shippingAddress) {
       setValue("fullName", shippingAddress.fullName)
@@ -38,13 +36,7 @@ function Shipping() {
     }
   }, [shippingAddress, setValue])
 
-  const submitHandler = ({
-    fullName,
-    address,
-    city,
-    postalCode,
-    country,
-  }) => {
+  const submitHandler = ({ fullName, address, city, postalCode, country }) => {
     dispatch({
       type: "SAVE_SHIPPING_ADDRESS",
       payload: { fullName, address, city, postalCode, country },
@@ -69,7 +61,6 @@ function Shipping() {
       >
         <h1 className="mb-6 text-xl font-bold">Shipping Address</h1>
 
-        {/* Full Name */}
         <div className="mb-4">
           <label className="mb-1 block">Full Name</label>
           <input
@@ -83,7 +74,6 @@ function Shipping() {
           )}
         </div>
 
-        {/* Address */}
         <div className="mb-4">
           <label className="mb-1 block">Address</label>
           <input
@@ -97,7 +87,6 @@ function Shipping() {
           )}
         </div>
 
-        {/* City */}
         <div className="mb-4">
           <label className="mb-1 block">City</label>
           <input
@@ -109,7 +98,6 @@ function Shipping() {
           )}
         </div>
 
-        {/* Postal Code */}
         <div className="mb-4">
           <label className="mb-1 block">Postal Code</label>
           <input
@@ -123,7 +111,6 @@ function Shipping() {
           )}
         </div>
 
-        {/* Country */}
         <div className="mb-4">
           <label className="mb-1 block">Country</label>
           <input
@@ -146,3 +133,5 @@ function Shipping() {
 }
 
 export default Shipping
+
+Shipping.auth = true

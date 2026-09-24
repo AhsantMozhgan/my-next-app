@@ -22,12 +22,11 @@ function Layout({ title, children }) {
   const { status, data: session } = useSession()
   const mounted = useMounted()
 
-  // Order matters in handleLogout
   const handleLogout = () => {
-    dispatch({ type: "CART_CLEAR" })   // empty cart in memory
-    Cookies.remove("cart")             // empty cart in the cookie
-    // Cookies.remove("shippingAddress")
-    signOut({ callbackUrl: "/" })      // end the NextAuth session
+    dispatch({ type: "CART_CLEAR" })
+    Cookies.remove("cart")
+    Cookies.remove("shippingAddress")
+    signOut({ callbackUrl: "/" })
   }
 
   const userMenuItems = [
