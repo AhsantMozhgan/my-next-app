@@ -23,7 +23,7 @@ function ProductItem({ item }) {
       payload: { ...item, quantity },
     })
 
-    router.push("/cart")
+    router.push("/")
   }
 
   return (
