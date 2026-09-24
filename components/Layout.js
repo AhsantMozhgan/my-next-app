@@ -2,8 +2,9 @@ import Head from "next/head"
 import Link from "next/link"
 import { useContext, useSyncExternalStore } from "react"
 import { useSession, signOut } from "next-auth/react"
+import Cookies from "js-cookie"
 import { Store } from "../context/Cart"
-import Dropdown from "./DropDown"
+import Dropdown from './DropDown'
 
 function useMounted() {
   return useSyncExternalStore(
@@ -14,17 +15,24 @@ function useMounted() {
 }
 
 function Layout({ title, children }) {
-  const { state } = useContext(Store)
+  const { state, dispatch } = useContext(Store)
   const { cart } = state
   const count = cart.cartItems.reduce((acc, cur) => acc + cur.quantity, 0)
 
   const { status, data: session } = useSession()
   const mounted = useMounted()
 
+  // Order matters in handleLogout
+  const handleLogout = () => {
+    dispatch({ type: "CART_CLEAR" })   // empty cart in memory
+    Cookies.remove("cart")             // empty cart in the cookie
+    signOut({ callbackUrl: "/" })      // end the NextAuth session
+  }
+
   const userMenuItems = [
     { href: "/profile", label: "Profile" },
     { href: "/order-history", label: "Order History" },
-    { label: "Logout", onClick: () => signOut({ callbackUrl: "/" }) },
+    { label: "Logout", onClick: handleLogout },
   ]
 
   return (
