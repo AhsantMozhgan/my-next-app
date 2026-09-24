@@ -27,7 +27,7 @@ function Shipping() {
     setValue,
   } = useForm()
 
-  // once context has the address, push it into the form
+  //once context has the address, push it into the form
   useEffect(() => {
     if (shippingAddress) {
       setValue("fullName", shippingAddress.fullName)
