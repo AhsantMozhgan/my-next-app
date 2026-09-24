@@ -1,18 +1,14 @@
 import { useRouter } from "next/router"
-import Layout from "../../components/Layout"
-import productItems from "../../data/products.json"
 import Image from "next/image"
 import { useContext } from "react"
+import Layout from "../../components/Layout"
+import db from "../../utils/db"
+import Product from "../../models/product"
 import { Store } from "../../context/Cart"
 
-function ProductPage() {
+function ProductPage({ product }) {
   const { state, dispatch } = useContext(Store)
   const router = useRouter()
-  const { query } = useRouter()
-  const { slug } = query
-
-  const product = productItems.find((pItem) => pItem.slug === slug)
-  if (!product) return <div>Product not found.</div>
 
   function addToCartHandler() {
     const existingItem = state.cart.cartItems.find(
@@ -20,7 +16,6 @@ function ProductPage() {
     )
     const quantity = existingItem ? existingItem.quantity + 1 : 1
 
-    // check-product-count
     if (product.count < quantity) {
       alert("Sorry. Product is out of stock")
       return
@@ -31,7 +26,7 @@ function ProductPage() {
       payload: { ...product, quantity },
     })
 
-    router.push('/cart')
+    router.push("/cart")
   }
 
   return (
@@ -41,9 +36,9 @@ function ProductPage() {
           <Image
             className="rounded-xl w-full h-auto"
             src={product.image}
+            alt={product.title}
             width={340}
             height={340}
-            alt={product.title}
           />
         </div>
 
@@ -64,13 +59,34 @@ function ProductPage() {
             <div>Status:</div>
             <div>{product.count > 0 ? "Available" : "Unavailable"}</div>
           </div>
-          <button onClick={addToCartHandler} className="rounded-xl bg-gray-700 text-white px-4 py-2 w-full">
+          <button
+            onClick={addToCartHandler}
+            className="rounded-xl bg-gray-700 text-white px-4 py-2 w-full mt-4"
+          >
             Add to Cart
           </button>
         </div>
       </div>
     </Layout>
   )
+}
+
+export async function getServerSideProps(context) {
+  const { params } = context
+  const { slug } = params
+
+  await db.connect()
+  const product = await Product.findOne({ slug }).lean()
+
+  if (!product) {
+    return { notFound: true }
+  }
+
+  return {
+    props: {
+      product: JSON.parse(JSON.stringify(product)),
+    },
+  }
 }
 
 export default ProductPage
