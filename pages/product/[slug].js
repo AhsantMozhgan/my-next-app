@@ -16,10 +16,10 @@ function ProductPage({ product }) {
     )
     const quantity = existingItem ? existingItem.quantity + 1 : 1
 
-    if (product.count < quantity) {
-      alert("Sorry. Product is out of stock")
-      return
-    }
+    // if (product.count < quantity) {
+    //   alert("Sorry. Product is out of stock")
+    //   return
+    // }
 
     dispatch({
       type: "ADD_ITEM",
