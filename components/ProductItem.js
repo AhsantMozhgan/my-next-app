@@ -1,17 +1,16 @@
+// components/ProductItem.js
 import Link from "next/link"
 import Image from "next/image"
 import { useContext } from "react"
 import { useRouter } from "next/router"
 import { Store } from "../context/Cart"
 
-function Product({ item }) {
+function ProductItem({ item }) {
   const { state, dispatch } = useContext(Store)
   const router = useRouter()
 
   function addToCartHandler() {
-    const existingItem = state.cart.cartItems.find(
-      (x) => x.slug === item.slug
-    )
+    const existingItem = state.cart.cartItems.find((x) => x.slug === item.slug)
     const quantity = existingItem ? existingItem.quantity + 1 : 1
 
     if (item.count < quantity) {
@@ -57,4 +56,4 @@ function Product({ item }) {
   )
 }
 
-export default Product
+export default ProductItem
