@@ -152,7 +152,7 @@ function PlaceOrderPage() {
             <span>${taxPrice}</span>
           </div>
           <div className="flex justify-between mb-4 font-semibold border-t pt-2">
-            <span>Total</span>
+            <span className="text-lg">Total</span>
             <span>${totalPrice}</span>
           </div>
 
