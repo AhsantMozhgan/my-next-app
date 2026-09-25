@@ -4,15 +4,24 @@ import { useContext, useSyncExternalStore } from "react"
 import { useSession, signOut } from "next-auth/react"
 import Cookies from "js-cookie"
 import { Store } from "../context/Cart"
-import Dropdown from './DropDown'
+import Dropdown from "./DropDown"
 
+// false on server, true on client — avoids hydration mismatch
 function useMounted() {
   return useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
+    () => () => {},     // No store to subscribe to
+    () => true,         // On the client, we're mounted
+    () => false         // On the server, we're not
   )
 }
+
+// const mounted = useSyncExternalStore(
+//   () => () => {},
+//   () => true,
+//   () => false
+// )
+
+// {mounted && count > 0 && <span>{count}</span>}
 
 function Layout({ title, children }) {
   const { state, dispatch } = useContext(Store)
