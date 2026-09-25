@@ -1,9 +1,16 @@
+import { useContext, useEffect } from "react"
+// import { useRouter } from "next/router"
 import Link from "next/link"
-import Image from "next/image"
+// import Image from "next/image"
 import Layout from "../components/Layout"
 import CheckoutWizard from "../components/CheckoutWizard"
+import { Store } from "../context/Cart"
 
 function PlaceOrderPage() {
+  const { state } = useContext(Store)
+  const {
+    cart: { cartItems, shippingAddress, paymentMethod },
+  } = state
 
   return (
     <Layout title="Place Order">
@@ -18,7 +25,9 @@ function PlaceOrderPage() {
           <div className="bg-white rounded-xl p-5 mb-4">
             <h2 className="mb-2 text-lg font-semibold">Shipping Address</h2>
             <p>
-              Shipping Data
+              {shippingAddress?.fullName}, {shippingAddress?.address},{" "}
+              {shippingAddress?.city}, {shippingAddress?.postalCode},{" "}
+              {shippingAddress?.country}
             </p>
             <Link href="/shipping" className="text-blue-600 underline text-sm">
               Edit
@@ -28,7 +37,7 @@ function PlaceOrderPage() {
           {/* Payment Method */}
           <div className="bg-white rounded-xl p-5 mb-4">
             <h2 className="mb-2 text-lg font-semibold">Payment Method</h2>
-            <p>paymentMethod  Data</p>
+            <p>{paymentMethod}</p>
             <Link href="/payment" className="text-blue-600 underline text-sm">
               Edit
             </Link>
