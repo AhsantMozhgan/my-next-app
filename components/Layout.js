@@ -26,6 +26,7 @@ function Layout({ title, children }) {
     dispatch({ type: "CART_CLEAR" })
     Cookies.remove("cart")
     Cookies.remove("shippingAddress")
+    Cookies.remove("paymentMethod")
     signOut({ callbackUrl: "/" })
   }
 
