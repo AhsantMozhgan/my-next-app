@@ -26,7 +26,7 @@ async function connect() {
   return cached.conn
 }
 
-// ⚠️ No disconnect function — that was causing "destroy is not a function"
+// No disconnect function — that was causing "destroy is not a function"
 
 const db = { connect }
 export default db
