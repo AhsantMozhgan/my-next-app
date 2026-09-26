@@ -1,6 +1,8 @@
 import { useRouter } from "next/router"
 import Image from "next/image"
 import { useContext } from "react"
+import { useSession } from "next-auth/react"
+import { toast } from "react-toastify"
 import Layout from "../../components/Layout"
 import db from "../../utils/db"
 import Product from "../../models/product"
@@ -8,24 +10,33 @@ import { Store } from "../../context/Cart"
 
 function ProductPage({ product }) {
   const { state, dispatch } = useContext(Store)
+  const { status } = useSession()
   const router = useRouter()
 
   function addToCartHandler() {
+    // block logged-out users
+    if (status !== "authenticated") {
+      toast.info("Please log in to add items to your cart")
+      router.push(`/login?redirect=/product/${product.slug}`)
+      return
+    }
+
     const existingItem = state.cart.cartItems.find(
       (item) => item.slug === product.slug
     )
     const quantity = existingItem ? existingItem.quantity + 1 : 1
 
-    // if (product.count < quantity) {
-    //   alert("Sorry. Product is out of stock")
-    //   return
-    // }
+    if (product.count < quantity) {
+      toast.error("Sorry. Product is out of stock")
+      return
+    }
 
     dispatch({
       type: "ADD_ITEM",
       payload: { ...product, quantity },
     })
 
+    toast.success("Added to cart!")
     router.push("/cart")
   }
 

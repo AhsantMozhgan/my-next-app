@@ -3,16 +3,22 @@ import Image from "next/image"
 import { useContext } from "react"
 import { useRouter } from "next/router"
 import { toast } from "react-toastify"
+import { useSession } from "next-auth/react"
 import { Store } from "../context/Cart"
 
 function ProductItem({ item }) {
   const { state, dispatch } = useContext(Store)
+  const { status } = useSession()
   const router = useRouter()
 
   function addToCartHandler() {
-    const existingItem = state.cart.cartItems.find(
-      (x) => x.slug === item.slug
-    )
+    if (status !== "authenticated") {
+      toast.info("Please log in to add items to your cart")
+      router.push(`/login?redirect=/product/${item.slug}`)
+      return
+    }
+
+    const existingItem = state.cart.cartItems.find((x) => x.slug === item.slug)
     const quantity = existingItem ? existingItem.quantity + 1 : 1
 
     if (item.count < quantity) {
@@ -20,11 +26,7 @@ function ProductItem({ item }) {
       return
     }
 
-    dispatch({
-      type: "ADD_ITEM",
-      payload: { ...item, quantity },
-    })
-
+    dispatch({ type: "ADD_ITEM", payload: { ...item, quantity } })
     toast.success("Added to cart!")
   }
 
