@@ -11,18 +11,17 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user?._id) token._id = user._id
-      if (user?.isAdmin) token.isAdmin = user.isAdmin   // must be here
+      if (user?.isAdmin) token.isAdmin = user.isAdmin
       return token
     },
     async session({ session, token }) {
       if (token?._id) session.user._id = token._id
-      if (token?.isAdmin) session.user.isAdmin = token.isAdmin   // must be here
+      if (token?.isAdmin) session.user.isAdmin = token.isAdmin
       return session
     },
   },
   providers: [
     CredentialsProvider({
-
       async authorize(credentials) {
         await db.connect()
         const user = await User.findOne({ email: credentials.email })
@@ -35,7 +34,7 @@ export const authOptions = {
           _id: user._id.toString(),
           name: user.name,
           email: user.email,
-          isAdmin: user.isAdmin,   // must be here
+          isAdmin: user.isAdmin,
         }
       },
     }),
