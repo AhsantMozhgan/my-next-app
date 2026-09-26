@@ -2,13 +2,17 @@ import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { getServerSession } from "next-auth/next"
 import Layout from "../../components/Layout"
+import AdminMenu from "../../components/AdminMenu"
 import { authOptions } from "../api/auth/[...nextauth]"
+
 
 function DashboardPage() {
   const { data: session } = useSession()
 
   return (
     <Layout title="Admin Dashboard">
+      <AdminMenu />
+
       <h1 className="mb-6 text-2xl font-bold">Admin Dashboard</h1>
 
       <p className="mb-6 text-gray-600">
