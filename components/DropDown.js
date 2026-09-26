@@ -4,7 +4,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 function Dropdown({ label, items }) {
   return (
     <Menu>
-      <MenuButton className="rounded bg-gray-700 px-3 py-1 text-sm text-white data-active:bg-gray-800">
+      <MenuButton className="rounded bg-gray-700 px-3 py-1 text-sm text-white data-[active]:bg-gray-800">
         {label}
       </MenuButton>
 
@@ -17,14 +17,14 @@ function Dropdown({ label, items }) {
             {item.href ? (
               <Link
                 href={item.href}
-                className="block rounded px-3 py-2 text-sm data-focus:bg-gray-100"
+                className="block rounded px-3 py-2 text-sm data-[focus]:bg-gray-100"
               >
                 {item.label}
               </Link>
             ) : (
               <button
                 onClick={item.onClick}
-                className="block w-full rounded px-3 py-2 text-left text-sm data-focus:bg-gray-100"
+                className="block w-full rounded px-3 py-2 text-left text-sm data-[focus]:bg-gray-100"
               >
                 {item.label}
               </button>

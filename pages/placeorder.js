@@ -14,14 +14,12 @@ function PlaceOrderPage() {
     cart: { cartItems, shippingAddress, paymentMethod },
   } = state
 
-  // guards
   useEffect(() => {
     if (!cartItems.length) return router.push("/")
     if (!shippingAddress?.address) return router.push("/shipping")
     if (!paymentMethod) return router.push("/payment")
   }, [cartItems, shippingAddress, paymentMethod, router])
 
-  // price calculations
   const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100
   const itemsPrice = round2(
     cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0)
@@ -53,9 +51,9 @@ function PlaceOrderPage() {
       }
 
       dispatch({ type: "CART_CLEAR" })
-      Cookies.remove("cart")
-      Cookies.remove("shippingAddress")
-      Cookies.remove("paymentMethod")
+      Cookies.remove("cart", { path: "/" })
+      Cookies.remove("shippingAddress", { path: "/" })
+      Cookies.remove("paymentMethod", { path: "/" })
 
       router.push(`/order/${data._id}`)
     } catch (err) {
@@ -71,7 +69,6 @@ function PlaceOrderPage() {
 
       <div className="grid md:grid-cols-4 md:gap-5">
         <div className="overflow-x-auto md:col-span-3">
-          {/* Shipping Address */}
           <div className="bg-white rounded-xl p-5 mb-4">
             <h2 className="mb-2 text-lg font-semibold">Shipping Address</h2>
             <p>
@@ -84,7 +81,6 @@ function PlaceOrderPage() {
             </Link>
           </div>
 
-          {/* Payment Method */}
           <div className="bg-white rounded-xl p-5 mb-4">
             <h2 className="mb-2 text-lg font-semibold">Payment Method</h2>
             <p>{paymentMethod}</p>
@@ -93,17 +89,17 @@ function PlaceOrderPage() {
             </Link>
           </div>
 
-          {/* Order Items */}
           <div className="bg-white rounded-xl p-5">
             <h2 className="mb-2 text-lg font-semibold">Order Items</h2>
-            <table className="w-full"><thead>
+            <table className="w-full">
+              <thead>
                 <tr className="border-b text-left text-sm text-gray-600">
-                    <th className="mb-2 text-lg font-semibold">Item</th>
-                    <th className="mb-2 text-lg font-semibold">Quantity</th>
-                    <th className="mb-2 text-lg font-semibold">Price</th>
-                    <th className="mb-2 text-lg font-semibold">Subtotal</th>
+                  <th className="mb-2 text-lg font-semibold">Item</th>
+                  <th className="mb-2 text-lg font-semibold">Quantity</th>
+                  <th className="mb-2 text-lg font-semibold">Price</th>
+                  <th className="mb-2 text-lg font-semibold">Subtotal</th>
                 </tr>
-                </thead>
+              </thead>
               <tbody>
                 {cartItems.map((item) => (
                   <tr key={item.slug} className="border-b">
@@ -134,8 +130,7 @@ function PlaceOrderPage() {
             </Link>
           </div>
         </div>
-        
-        {/* Order Summary */}
+
         <div className="bg-white rounded-xl p-5 md:sticky md:top-4 h-fit">
           <h2 className="mb-4 text-lg font-semibold">Order Summary</h2>
 

@@ -36,7 +36,13 @@ function Shipping() {
     }
   }, [shippingAddress, setValue])
 
-  const submitHandler = ({ fullName, address, city, postalCode, country }) => {
+  const submitHandler = ({
+    fullName,
+    address,
+    city,
+    postalCode,
+    country,
+  }) => {
     dispatch({
       type: "SAVE_SHIPPING_ADDRESS",
       payload: { fullName, address, city, postalCode, country },
@@ -45,7 +51,7 @@ function Shipping() {
     Cookies.set(
       "shippingAddress",
       JSON.stringify({ fullName, address, city, postalCode, country }),
-      { expires: 7 }
+      { expires: 7, path: "/" }
     )
 
     router.push("/payment")

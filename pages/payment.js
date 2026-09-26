@@ -8,7 +8,9 @@ import { Store } from "../context/Cart"
 function PaymentPage() {
   const router = useRouter()
   const { state, dispatch } = useContext(Store)
-  const { cart: { shippingAddress, paymentMethod }, } = state
+  const {
+    cart: { shippingAddress, paymentMethod },
+  } = state
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
     paymentMethod || ""
@@ -31,7 +33,10 @@ function PaymentPage() {
     }
 
     dispatch({ type: "SAVE_PAYMENT_METHOD", payload: selectedPaymentMethod })
-    Cookies.set("paymentMethod", selectedPaymentMethod, { expires: 7 })
+    Cookies.set("paymentMethod", selectedPaymentMethod, {
+      expires: 7,
+      path: "/",
+    })
     router.push("/placeorder")
   }
 

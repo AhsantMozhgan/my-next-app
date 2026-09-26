@@ -6,22 +6,13 @@ import Cookies from "js-cookie"
 import { Store } from "../context/Cart"
 import Dropdown from "./DropDown"
 
-// false on server, true on client — avoids hydration mismatch
 function useMounted() {
   return useSyncExternalStore(
-    () => () => {},     // No store to subscribe to
-    () => true,         // On the client, we're mounted
-    () => false         // On the server, we're not
+    () => () => {},
+    () => true,
+    () => false
   )
 }
-
-// const mounted = useSyncExternalStore(
-//   () => () => {},
-//   () => true,
-//   () => false
-// )
-
-// {mounted && count > 0 && <span>{count}</span>}
 
 function Layout({ title, children }) {
   const { state, dispatch } = useContext(Store)
@@ -33,9 +24,9 @@ function Layout({ title, children }) {
 
   const handleLogout = () => {
     dispatch({ type: "CART_CLEAR" })
-    Cookies.remove("cart")
-    Cookies.remove("shippingAddress")
-    Cookies.remove("paymentMethod")
+    Cookies.remove("cart", { path: "/" })
+    Cookies.remove("shippingAddress", { path: "/" })
+    Cookies.remove("paymentMethod", { path: "/" })
     signOut({ callbackUrl: "/" })
   }
 

@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/shopping"
+const MONGODB_URI = process.env.MONGODB_URI
 
 if (!MONGODB_URI) {
   throw new Error("Please add MONGODB_URI to .env.local")
@@ -25,14 +25,5 @@ async function connect() {
   return cached.conn
 }
 
-async function disconnect() {
-  if (cached.conn) {
-    await cached.conn.disconnect()
-    cached.conn = null
-    cached.promise = null
-  }
-}
-
-
-const db = { connect, disconnect }
+const db = { connect }
 export default db

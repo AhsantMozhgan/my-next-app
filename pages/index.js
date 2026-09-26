@@ -18,7 +18,7 @@ function Home({ products }) {
 export async function getServerSideProps() {
   await db.connect()
   const products = await Product.find({}).lean()
-  await db.disconnect?.()
+  // No db.disconnect() here — cached connection is reused across requests
 
   return {
     props: {

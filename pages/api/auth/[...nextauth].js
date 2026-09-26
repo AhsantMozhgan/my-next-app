@@ -4,45 +4,45 @@ import bcrypt from "bcryptjs"
 import db from "../../../utils/db"
 import User from "../../../models/user"
 
-export default NextAuth({
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        await db.connect()
-
-        const user = await User.findOne({ email: credentials.email })
-        if (!user) throw new Error("No user found with that email")
-
-        const ok = await bcrypt.compare(credentials.password, user.password)
-        if (!ok) throw new Error("Incorrect password")
-
-        return {
-          _id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          isAdmin: user.isAdmin,
-        }
-      },
-    }),
-  ],
-
-  session: { strategy: "jwt" },
-
+export const authOptions = {
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async jwt({ token, user }) {
-      if (user?._id) token._id = user._id
-      if (user?.isAdmin) token.isAdmin = user.isAdmin
+      if (user) {
+        token._id = user._id
+        token.isAdmin = user.isAdmin
+      }
       return token
     },
     async session({ session, token }) {
-      if (token?._id) session.user._id = token._id
-      if (token?.isAdmin) session.user.isAdmin = token.isAdmin
+      if (token) {
+        session.user._id = token._id
+        session.user.isAdmin = token.isAdmin
+      }
       return session
     },
   },
-})
+  providers: [
+    CredentialsProvider({
+      async authorize(credentials) {
+        await db.connect()
+        const user = await User.findOne({ email: credentials.email })
+
+        if (user && bcrypt.compareSync(credentials.password, user.password)) {
+          return {
+            _id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+          }
+        }
+
+        throw new Error("Invalid email or password")
+      },
+    }),
+  ],
+}
+
+export default NextAuth(authOptions)
