@@ -30,11 +30,13 @@ function Layout({ title, children }) {
     signOut({ callbackUrl: "/" })
   }
 
-  const userMenuItems = [
-    { href: "/profile", label: "Profile" },
-    { href: "/order-history", label: "Order History" },
-    { label: "Logout", onClick: handleLogout },
-  ]
+const userMenuItems = [
+  ...(session?.user?.isAdmin
+    ? [{ href: "/admin/dashboard", label: "Admin Dashboard" }]
+    : []),
+  { href: "/order-history", label: "Order History" },
+  { label: "Logout", onClick: handleLogout },
+]
 
   return (
     <>

@@ -10,36 +10,33 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token._id = user._id
-        token.isAdmin = user.isAdmin
-      }
+      if (user?._id) token._id = user._id
+      if (user?.isAdmin) token.isAdmin = user.isAdmin   // must be here
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user._id = token._id
-        session.user.isAdmin = token.isAdmin
-      }
+      if (token?._id) session.user._id = token._id
+      if (token?.isAdmin) session.user.isAdmin = token.isAdmin   // must be here
       return session
     },
   },
   providers: [
     CredentialsProvider({
+
       async authorize(credentials) {
         await db.connect()
         const user = await User.findOne({ email: credentials.email })
+        if (!user) throw new Error("No user found")
 
-        if (user && bcrypt.compareSync(credentials.password, user.password)) {
-          return {
-            _id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            isAdmin: user.isAdmin,
-          }
+        const ok = await bcrypt.compare(credentials.password, user.password)
+        if (!ok) throw new Error("Incorrect password")
+
+        return {
+          _id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin,   // must be here
         }
-
-        throw new Error("Invalid email or password")
       },
     }),
   ],

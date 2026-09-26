@@ -14,7 +14,7 @@ export default function MyApp({
       <SessionProvider session={session}>
         <StoreProvider>
           {Component.auth ? (
-            <Auth>
+            <Auth adminOnly={Component.auth.adminOnly}>
               <Component {...pageProps} />
             </Auth>
           ) : (
@@ -27,9 +27,9 @@ export default function MyApp({
   )
 }
 
-function Auth({ children }) {
+function Auth({ children, adminOnly }) {
   const router = useRouter()
-  const { status } = useSession({
+  const { status, data: session } = useSession({
     required: true,
     onUnauthenticated() {
       router.push("/unauthorized")
@@ -38,6 +38,11 @@ function Auth({ children }) {
 
   if (status === "loading") {
     return <div className="p-10 text-center">Loading…</div>
+  }
+
+  if (adminOnly && !session?.user?.isAdmin) {
+    router.push("/unauthorized")
+    return null
   }
 
   return children
