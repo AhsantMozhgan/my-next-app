@@ -39,6 +39,7 @@ async function handler(req, res) {
           totalSales: { $sum: "$totalPrice" },
         },
       },
+      { $sort: { _id: 1 } },
     ])
 
     res.status(200).json({

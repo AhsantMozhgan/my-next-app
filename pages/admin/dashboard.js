@@ -39,37 +39,53 @@ function DashboardPage() {
     <Layout title="Admin Dashboard">
       <AdminMenu />
 
-      <h1 className="mb-6 text-2xl font-bold">Admin Dashboard</h1>
+      <div className="mb-6">
+        <h1 className="mb-2 text-2xl font-bold">Admin Dashboard</h1>
+        <p className="text-gray-600">
+          Welcome back, {session?.user?.name}.
+        </p>
+      </div>
 
-      <p className="mb-6 text-gray-600">
-        Welcome back, {session?.user?.name}.
-      </p>
+      {loading && (
+        <p className="text-gray-500">Loading summary…</p>
+      )}
 
-      {loading && <p>Loading summary…</p>}
-
-      {error && <p className="text-red-600">Error: {error}</p>}
+      {error && (
+        <p className="rounded-lg bg-red-100 p-3 text-red-700">
+          Error: {error}
+        </p>
+      )}
 
       {summary && (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-4 mb-6">
-          <div className="bg-white rounded-xl p-6">
-            <p className="mb-2 text-sm font-bold text-gray-600">Orders</p>
-            <p className="text-2xl font-bold">{summary.ordersCount}</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6">
-            <p className="mb-2 text-sm font-bold text-gray-600">Products</p>
-            <p className="text-2xl font-bold">{summary.productsCount}</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6">
-            <p className="mb-2 text-sm font-bold text-gray-600">Users</p>
-            <p className="text-2xl font-bold">{summary.usersCount}</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6">
-            <p className="mb-2 text-sm font-bold text-gray-600">Total Sales</p>
-            <p className="text-2xl font-bold">${summary.ordersPrice}</p>
-          </div>
+        <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            label="Orders"
+            value={summary.ordersCount}
+            accent="blue"
+            icon="🧾"
+            href="/admin/orders"
+          />
+          <StatCard
+            label="Products"
+            value={summary.productsCount}
+            accent="green"
+            icon="📦"
+            href="/admin/products"
+          />
+          <StatCard
+            label="Users"
+            value={summary.usersCount}
+            accent="purple"
+            icon="👤"
+            href="/admin/users"
+          />
+          <StatCard
+            label="Total Sales"
+            value={`$${summary.ordersPrice.toFixed(2)}`}
+            accent="amber"
+            icon="💰"
+            href="/admin/orders"
+          />
         </div>
       )}
 
@@ -78,9 +94,11 @@ function DashboardPage() {
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         <Link
           href="/admin/products"
-          className="bg-white rounded-xl p-6 hover:shadow-lg"
+          className="group rounded-xl bg-white p-6 transition hover:shadow-lg"
         >
-          <h2 className="mb-2 text-lg font-semibold">Products</h2>
+          <h3 className="mb-2 text-lg font-semibold group-hover:text-blue-600">
+            Products
+          </h3>
           <p className="text-sm text-gray-600">
             Manage products: add, edit, delete
           </p>
@@ -88,9 +106,11 @@ function DashboardPage() {
 
         <Link
           href="/admin/orders"
-          className="bg-white rounded-xl p-6 hover:shadow-lg"
+          className="group rounded-xl bg-white p-6 transition hover:shadow-lg"
         >
-          <h2 className="mb-2 text-lg font-semibold">Orders</h2>
+          <h3 className="mb-2 text-lg font-semibold group-hover:text-blue-600">
+            Orders
+          </h3>
           <p className="text-sm text-gray-600">
             View and manage customer orders
           </p>
@@ -98,15 +118,41 @@ function DashboardPage() {
 
         <Link
           href="/admin/users"
-          className="bg-white rounded-xl p-6 hover:shadow-lg"
+          className="group rounded-xl bg-white p-6 transition hover:shadow-lg"
         >
-          <h2 className="mb-2 text-lg font-semibold">Users</h2>
+          <h3 className="mb-2 text-lg font-semibold group-hover:text-blue-600">
+            Users
+          </h3>
           <p className="text-sm text-gray-600">
             Manage registered users
           </p>
         </Link>
       </div>
     </Layout>
+  )
+}
+
+function StatCard({ label, value, accent, icon, href }) {
+  const accentClasses = {
+    blue: "border-blue-500 text-blue-600",
+    green: "border-green-500 text-green-600",
+    purple: "border-purple-500 text-purple-600",
+    amber: "border-amber-500 text-amber-600",
+  }
+
+  const cls = accentClasses[accent] || accentClasses.blue
+
+  return (
+    <Link
+      href={href}
+      className={`rounded-xl border-l-4 bg-white p-5 transition hover:shadow-lg ${cls}`}
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-sm font-bold text-gray-600">{label}</span>
+        <span className="text-2xl">{icon}</span>
+      </div>
+      <p className={`text-3xl font-bold ${cls.split(" ")[1]}`}>{value}</p>
+    </Link>
   )
 }
 
