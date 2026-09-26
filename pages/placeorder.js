@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import Image from "next/image"
@@ -14,11 +14,24 @@ function PlaceOrderPage() {
     cart: { cartItems, shippingAddress, paymentMethod },
   } = state
 
+  const [placingOrder, setPlacingOrder] = useState(false)
+
   useEffect(() => {
-    if (!cartItems.length) return router.push("/")
-    if (!shippingAddress?.address) return router.push("/shipping")
-    if (!paymentMethod) return router.push("/payment")
-  }, [cartItems, shippingAddress, paymentMethod, router])
+    if (placingOrder) return
+
+    if (!cartItems.length) {
+      router.push("/")
+      return
+    }
+    if (!shippingAddress?.address) {
+      router.push("/shipping")
+      return
+    }
+    if (!paymentMethod) {
+      router.push("/payment")
+      return
+    }
+  }, [cartItems, shippingAddress, paymentMethod, router, placingOrder])
 
   const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100
   const itemsPrice = round2(
@@ -29,6 +42,8 @@ function PlaceOrderPage() {
   const totalPrice = round2(itemsPrice + shippingPrice + taxPrice)
 
   const placeOrderHandler = async () => {
+    setPlacingOrder(true)
+
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
@@ -46,6 +61,7 @@ function PlaceOrderPage() {
 
       const data = await response.json()
       if (!response.ok) {
+        setPlacingOrder(false)
         alert(data.message || "Failed to place order")
         return
       }
@@ -55,9 +71,9 @@ function PlaceOrderPage() {
       Cookies.remove("shippingAddress", { path: "/" })
       Cookies.remove("paymentMethod", { path: "/" })
 
-      router.push(`/order/order-history`)
-      // router.push(`/order/${data._id}`)
+      router.push("/order-history")
     } catch (err) {
+      setPlacingOrder(false)
       alert(err.message)
     }
   }
@@ -94,11 +110,11 @@ function PlaceOrderPage() {
             <h2 className="mb-2 text-lg font-semibold">Order Items</h2>
             <table className="w-full">
               <thead>
-                <tr className="border-b text-left text-sm text-gray-600">
-                  <th className="mb-2 text-lg font-semibold">Item</th>
-                  <th className="mb-2 text-lg font-semibold">Quantity</th>
-                  <th className="mb-2 text-lg font-semibold">Price</th>
-                  <th className="mb-2 text-lg font-semibold">Subtotal</th>
+                <tr className="border-b text-left text-sm font-bold text-gray-600">
+                  <th className="pb-2">Item</th>
+                  <th className="pb-2">Quantity</th>
+                  <th className="pb-2">Price</th>
+                  <th className="pb-2">Subtotal</th>
                 </tr>
               </thead>
               <tbody>
@@ -148,7 +164,7 @@ function PlaceOrderPage() {
             <span>${taxPrice}</span>
           </div>
           <div className="flex justify-between mb-4 font-semibold border-t pt-2">
-            <span className="text-lg">Total</span>
+            <span>Total</span>
             <span>${totalPrice}</span>
           </div>
 
