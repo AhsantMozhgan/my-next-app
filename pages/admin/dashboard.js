@@ -88,46 +88,6 @@ function DashboardPage() {
           />
         </div>
       )}
-
-      <h2 className="mb-4 text-xl font-bold">Manage</h2>
-
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <Link
-          href="/admin/products"
-          className="group rounded-xl bg-white p-6 transition hover:shadow-lg"
-        >
-          <h3 className="mb-2 text-lg font-semibold group-hover:text-blue-600">
-            Products
-          </h3>
-          <p className="text-sm text-gray-600">
-            Manage products: add, edit, delete
-          </p>
-        </Link>
-
-        <Link
-          href="/admin/orders"
-          className="group rounded-xl bg-white p-6 transition hover:shadow-lg"
-        >
-          <h3 className="mb-2 text-lg font-semibold group-hover:text-blue-600">
-            Orders
-          </h3>
-          <p className="text-sm text-gray-600">
-            View and manage customer orders
-          </p>
-        </Link>
-
-        <Link
-          href="/admin/users"
-          className="group rounded-xl bg-white p-6 transition hover:shadow-lg"
-        >
-          <h3 className="mb-2 text-lg font-semibold group-hover:text-blue-600">
-            Users
-          </h3>
-          <p className="text-sm text-gray-600">
-            Manage registered users
-          </p>
-        </Link>
-      </div>
     </Layout>
   )
 }
