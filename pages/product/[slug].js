@@ -14,7 +14,6 @@ function ProductPage({ product }) {
   const router = useRouter()
 
   function addToCartHandler() {
-    // block logged-out users
     if (status !== "authenticated") {
       toast.info("Please log in to add items to your cart")
       router.push(`/login?redirect=/product/${product.slug}`)
@@ -50,6 +49,7 @@ function ProductPage({ product }) {
             alt={product.title}
             width={340}
             height={340}
+            priority
           />
         </div>
 
