@@ -55,7 +55,8 @@ function PlaceOrderPage() {
       Cookies.remove("shippingAddress", { path: "/" })
       Cookies.remove("paymentMethod", { path: "/" })
 
-      router.push(`/order/${data._id}`)
+      router.push(`/order/order-history`)
+      // router.push(`/order/${data._id}`)
     } catch (err) {
       alert(err.message)
     }
