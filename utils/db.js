@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 
-const MONGODB_URI = process.env.MONGODB_URI
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/shopping"
 
 if (!MONGODB_URI) {
   throw new Error("Please add MONGODB_URI to .env.local")
@@ -24,6 +25,8 @@ async function connect() {
   cached.conn = await cached.promise
   return cached.conn
 }
+
+// ⚠️ No disconnect function — that was causing "destroy is not a function"
 
 const db = { connect }
 export default db

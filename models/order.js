@@ -38,9 +38,7 @@ const orderSchema = new mongoose.Schema(
     paidAt: { type: Date },
     deliveredAt: { type: Date },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 )
 
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema)

@@ -1,70 +1,205 @@
-import { createContext, useReducer } from "react"
+
+import { createContext, useReducer, useContext, useEffect } from "react"
 import Cookies from "js-cookie"
 
 export const Store = createContext()
 
 const initialState = {
-  cart: { cartItems: [], shippingAddress: {}, paymentMethod: "" },
-}
-
-export function StoreProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState, (init) => {
-    const cart = typeof window !== "undefined" ? Cookies.get("cart") : null
-    return cart ? { cart: JSON.parse(cart) } : init
-  })
-
-  const value = { state, dispatch }
-  return <Store.Provider value={value}>{children}</Store.Provider>
+  cart: {
+    cartItems: [],
+    shippingAddress: null,
+    paymentMethod: "",
+  },
 }
 
 function reducer(state, action) {
   switch (action.type) {
     case "ADD_ITEM": {
       const newItem = action.payload
-      const existingItem = state.cart.cartItems.find(
+      const existItem = state.cart.cartItems.find(
         (item) => item.slug === newItem.slug
       )
-      const cartItems = existingItem
+      const cartItems = existItem
         ? state.cart.cartItems.map((item) =>
-            item.slug === existingItem.slug ? newItem : item
+            item.slug === existItem.slug ? newItem : item
           )
         : [...state.cart.cartItems, newItem]
-
-      Cookies.set("cart", JSON.stringify({ ...state.cart, cartItems }))
       return { ...state, cart: { ...state.cart, cartItems } }
     }
 
     case "REMOVE_ITEM": {
-      const removeItem = action.payload
       const cartItems = state.cart.cartItems.filter(
-        (item) => item.slug !== removeItem.slug
+        (item) => item.slug !== action.payload.slug
       )
-      Cookies.set("cart", JSON.stringify({ ...state.cart, cartItems }))
       return { ...state, cart: { ...state.cart, cartItems } }
     }
 
-    case "CART_CLEAR": {
-      const cartItems = []
-      Cookies.set("cart", JSON.stringify({ ...state.cart, cartItems }))
-      return { ...state, cart: { ...state.cart, cartItems } }
-    }
-
-    case "SAVE_SHIPPING_ADDRESS": {
-      const updatedCart = {
-        ...state.cart,
-        shippingAddress: { ...state.cart.shippingAddress, ...action.payload },
+    case "CART_CLEAR":
+      return {
+        ...state,
+        cart: { cartItems: [], shippingAddress: null, paymentMethod: "" },
       }
-      Cookies.set("cart", JSON.stringify(updatedCart))
-      return { ...state, cart: updatedCart }
-    }
 
-    case "SAVE_PAYMENT_METHOD": {
-      const updatedCart = { ...state.cart, paymentMethod: action.payload }
-      Cookies.set("cart", JSON.stringify(updatedCart))
-      return { ...state, cart: updatedCart }
-    }
+    case "CART_HYDRATE":
+      return { ...state, cart: { ...state.cart, cartItems: action.payload } }
+
+    case "SAVE_SHIPPING_ADDRESS":
+      return {
+        ...state,
+        cart: { ...state.cart, shippingAddress: action.payload },
+      }
+
+    case "SAVE_PAYMENT_METHOD":
+      return {
+        ...state,
+        cart: { ...state.cart, paymentMethod: action.payload },
+      }
 
     default:
       return state
   }
 }
+
+export function StoreProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  // hydrate once on mount
+  useEffect(() => {
+    const storedCart = Cookies.get("cart")
+    if (storedCart) {
+      try {
+        const parsed = JSON.parse(storedCart)
+        if (parsed?.cartItems?.length) {
+          dispatch({ type: "CART_HYDRATE", payload: parsed.cartItems })
+        }
+      } catch (e) {}
+    }
+
+    const storedAddress = Cookies.get("shippingAddress")
+    if (storedAddress) {
+      try {
+        dispatch({
+          type: "SAVE_SHIPPING_ADDRESS",
+          payload: JSON.parse(storedAddress),
+        })
+      } catch (e) {}
+    }
+
+    const storedPayment = Cookies.get("paymentMethod")
+    if (storedPayment) {
+      dispatch({ type: "SAVE_PAYMENT_METHOD", payload: storedPayment })
+    }
+  }, [])
+
+  // persist cart items
+  useEffect(() => {
+    Cookies.set(
+      "cart",
+      JSON.stringify({ cartItems: state.cart.cartItems }),
+      { expires: 7, path: "/" }
+    )
+  }, [state.cart.cartItems])
+
+  // persist shipping address
+  useEffect(() => {
+    if (state.cart.shippingAddress) {
+      Cookies.set(
+        "shippingAddress",
+        JSON.stringify(state.cart.shippingAddress),
+        { expires: 7, path: "/" }
+      )
+    }
+  }, [state.cart.shippingAddress])
+
+  // persist payment method
+  useEffect(() => {
+    if (state.cart.paymentMethod) {
+      Cookies.set("paymentMethod", state.cart.paymentMethod, {
+        expires: 7,
+        path: "/",
+      })
+    }
+  }, [state.cart.paymentMethod])
+
+  return (
+    <Store.Provider value={{ state, dispatch }}>
+      {children}
+    </Store.Provider>
+  )
+}
+
+export function useStore() {
+  return useContext(Store)
+}
+
+// import { createContext, useReducer } from "react"
+// import Cookies from "js-cookie"
+
+// export const Store = createContext()
+
+// const initialState = {
+//   cart: { cartItems: [], shippingAddress: {}, paymentMethod: "" },
+// }
+
+// export function StoreProvider({ children }) {
+//   const [state, dispatch] = useReducer(reducer, initialState, (init) => {
+//     const cart = typeof window !== "undefined" ? Cookies.get("cart") : null
+//     return cart ? { cart: JSON.parse(cart) } : init
+//   })
+
+//   const value = { state, dispatch }
+//   return <Store.Provider value={value}>{children}</Store.Provider>
+// }
+
+// function reducer(state, action) {
+//   switch (action.type) {
+//     case "ADD_ITEM": {
+//       const newItem = action.payload
+//       const existingItem = state.cart.cartItems.find(
+//         (item) => item.slug === newItem.slug
+//       )
+//       const cartItems = existingItem
+//         ? state.cart.cartItems.map((item) =>
+//             item.slug === existingItem.slug ? newItem : item
+//           )
+//         : [...state.cart.cartItems, newItem]
+
+//       Cookies.set("cart", JSON.stringify({ ...state.cart, cartItems }))
+//       return { ...state, cart: { ...state.cart, cartItems } }
+//     }
+
+//     case "REMOVE_ITEM": {
+//       const removeItem = action.payload
+//       const cartItems = state.cart.cartItems.filter(
+//         (item) => item.slug !== removeItem.slug
+//       )
+//       Cookies.set("cart", JSON.stringify({ ...state.cart, cartItems }))
+//       return { ...state, cart: { ...state.cart, cartItems } }
+//     }
+
+//     case "CART_CLEAR": {
+//       const cartItems = []
+//       Cookies.set("cart", JSON.stringify({ ...state.cart, cartItems }))
+//       return { ...state, cart: { ...state.cart, cartItems } }
+//     }
+
+//     case "SAVE_SHIPPING_ADDRESS": {
+//       const updatedCart = {
+//         ...state.cart,
+//         shippingAddress: { ...state.cart.shippingAddress, ...action.payload },
+//       }
+//       Cookies.set("cart", JSON.stringify(updatedCart))
+//       return { ...state, cart: updatedCart }
+//     }
+
+//     case "SAVE_PAYMENT_METHOD": {
+//       const updatedCart = { ...state.cart, paymentMethod: action.payload }
+//       Cookies.set("cart", JSON.stringify(updatedCart))
+//       return { ...state, cart: updatedCart }
+//     }
+
+//     default:
+//       return state
+//   }
+// }
+
