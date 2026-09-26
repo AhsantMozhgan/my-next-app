@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { getServerSession } from "next-auth/next"
@@ -5,9 +6,34 @@ import Layout from "../../components/Layout"
 import AdminMenu from "../../components/AdminMenu"
 import { authOptions } from "../api/auth/[...nextauth]"
 
-
 function DashboardPage() {
   const { data: session } = useSession()
+
+  const [summary, setSummary] = useState(null)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchSummary() {
+      try {
+        const response = await fetch("/api/admin/summary")
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`)
+        }
+
+        const data = await response.json()
+        setSummary(data)
+      } catch (err) {
+        console.error(err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSummary()
+  }, [])
 
   return (
     <Layout title="Admin Dashboard">
@@ -18,6 +44,36 @@ function DashboardPage() {
       <p className="mb-6 text-gray-600">
         Welcome back, {session?.user?.name}.
       </p>
+
+      {loading && <p>Loading summary…</p>}
+
+      {error && <p className="text-red-600">Error: {error}</p>}
+
+      {summary && (
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-4 mb-6">
+          <div className="bg-white rounded-xl p-6">
+            <p className="mb-2 text-sm font-bold text-gray-600">Orders</p>
+            <p className="text-2xl font-bold">{summary.ordersCount}</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6">
+            <p className="mb-2 text-sm font-bold text-gray-600">Products</p>
+            <p className="text-2xl font-bold">{summary.productsCount}</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6">
+            <p className="mb-2 text-sm font-bold text-gray-600">Users</p>
+            <p className="text-2xl font-bold">{summary.usersCount}</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6">
+            <p className="mb-2 text-sm font-bold text-gray-600">Total Sales</p>
+            <p className="text-2xl font-bold">${summary.ordersPrice}</p>
+          </div>
+        </div>
+      )}
+
+      <h2 className="mb-4 text-xl font-bold">Manage</h2>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         <Link
