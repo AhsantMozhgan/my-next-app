@@ -30,13 +30,13 @@ function Layout({ title, children }) {
     signOut({ callbackUrl: "/" })
   }
 
-const userMenuItems = [
-  ...(session?.user?.isAdmin
-    ? [{ href: "/admin/dashboard", label: "Admin Dashboard" }]
-    : []),
-  { href: "/order-history", label: "Order History" },
-  { label: "Logout", onClick: handleLogout },
-]
+  const userMenuItems = [
+    ...(session?.user?.isAdmin
+      ? [{ href: "/admin/dashboard", label: "Admin Dashboard" }]
+      : []),
+    { href: "/order-history", label: "Order History" },
+    { label: "Logout", onClick: handleLogout },
+  ]
 
   return (
     <>
@@ -47,7 +47,9 @@ const userMenuItems = [
       <div className="flex min-h-screen flex-col justify-between">
         <header>
           <nav className="flex h-14 px-8 justify-between items-center border-b-4 bg-white">
-            <Link href="/" className="text-lg font-bold">Shopping</Link>
+            <Link href="/" className="text-lg font-bold">
+              Shopping
+            </Link>
 
             <div className="flex items-center gap-4">
               <Link href="/cart" className="p-2">
@@ -64,7 +66,9 @@ const userMenuItems = [
               ) : session ? (
                 <Dropdown label={session.user.name} items={userMenuItems} />
               ) : (
-                <Link href="/login" className="p-2">Login</Link>
+                <Link href="/login" className="p-2">
+                  Login
+                </Link>
               )}
             </div>
           </nav>
@@ -72,7 +76,9 @@ const userMenuItems = [
 
         <main className="container m-auto mt-4 px-4">{children}</main>
 
-        <footer className="flex justify-center items-center h-10">Footer</footer>
+        <footer className="flex justify-center items-center h-10">
+          Footer
+        </footer>
       </div>
     </>
   )
