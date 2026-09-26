@@ -60,6 +60,7 @@ function AdminOrdersPage() {
                 <th className="pb-2">Order ID</th>
                 <th className="pb-2">User</th>
                 <th className="pb-2">Date</th>
+                <th className="pb-2">Payment Method</th>
                 <th className="pb-2">Total</th>
                 <th className="pb-2">Paid</th>
                 <th className="pb-2">Delivered</th>
@@ -83,6 +84,10 @@ function AdminOrdersPage() {
 
                   <td className="py-3">
                     {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+
+                  <td className="py-3">
+                    {order.paymentMethod || "—"}
                   </td>
 
                   <td className="py-3">${order.totalPrice}</td>
