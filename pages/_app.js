@@ -29,6 +29,7 @@ export default function MyApp({
 
 function Auth({ children, adminOnly }) {
   const router = useRouter()
+  
   const { status, data: session } = useSession({
     required: true,
     onUnauthenticated() {

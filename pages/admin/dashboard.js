@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { useSession } from "next-auth/react"
+import { getServerSession } from "next-auth/next"
 import Layout from "../../components/Layout"
+import { authOptions } from "../api/auth/[...nextauth]"
 
 function DashboardPage() {
   const { data: session } = useSession()
@@ -50,5 +52,28 @@ function DashboardPage() {
 
 export default DashboardPage
 
-// admin-only protection
 DashboardPage.auth = { adminOnly: true }
+
+export async function getServerSideProps(ctx) {
+  const session = await getServerSession(ctx.req, ctx.res, authOptions)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login?redirect=/admin/dashboard",
+        permanent: false,
+      },
+    }
+  }
+
+  if (!session.user.isAdmin) {
+    return {
+      redirect: {
+        destination: "/unauthorized",
+        permanent: false,
+      },
+    }
+  }
+
+  return { props: {} }
+}
